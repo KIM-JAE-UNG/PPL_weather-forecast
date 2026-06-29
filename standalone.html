@@ -24,19 +24,24 @@ body{margin:0;font-family:-apple-system,'Segoe UI',sans-serif;background:#0d1117
 .play-btn svg{width:13px;height:13px;}
 #slider,#tslider{flex:1;height:3px;-webkit-appearance:none;background:#30363d;border-radius:2px;}
 #slider::-webkit-slider-thumb,#tslider::-webkit-slider-thumb{-webkit-appearance:none;width:15px;height:15px;border-radius:50%;background:#1f6feb;cursor:pointer;}
-.home{padding:22px 0 24px;overflow-y:auto;height:100%;}
-.home h1{font-size:22px;font-weight:700;margin:0 0 4px;padding:0 18px;}
-.home .sub{font-size:12px;color:#7d8590;margin-bottom:18px;padding:0 18px;}
+.home{padding:20px 0 24px;overflow-y:auto;height:100%;}
+.home h1{font-size:22px;font-weight:700;margin:0 0 14px;padding:0 18px;}
+/* 도시 선택 */
+.cities{display:flex;overflow-x:auto;gap:8px;padding:0 18px 16px;-webkit-overflow-scrolling:touch;}
+.cities::-webkit-scrollbar{display:none;}
+.city{flex:0 0 auto;padding:7px 15px;border-radius:18px;background:#161b22;border:1px solid rgba(255,255,255,0.08);font-size:13px;font-weight:500;color:#9ea7b3;cursor:pointer;}
+.city.on{background:#1f6feb;color:#fff;border-color:#1f6feb;}
+.now-box{padding:0 18px 18px;}
+.now-temp{font-size:46px;font-weight:200;line-height:1;}
+.now-cond{font-size:14px;color:#9ea7b3;margin-top:4px;}
 .section-label{font-size:11px;color:#7d8590;font-weight:600;padding:0 18px;margin-bottom:8px;text-transform:uppercase;letter-spacing:0.5px;}
-/* 시간별 가로 스크롤 */
 .hourly{display:flex;overflow-x:auto;gap:0;padding:0 12px 4px;margin-bottom:22px;-webkit-overflow-scrolling:touch;}
 .hourly::-webkit-scrollbar{display:none;}
-.hour-item{flex:0 0 auto;width:58px;display:flex;flex-direction:column;align-items:center;gap:6px;padding:10px 0;}
+.hour-item{flex:0 0 auto;width:56px;display:flex;flex-direction:column;align-items:center;gap:6px;padding:10px 0;}
 .hour-time{font-size:11px;color:#9ea7b3;font-weight:500;}
-.hour-icon{width:24px;height:24px;stroke:#58a6ff;stroke-width:1.5;fill:none;}
+.hour-icon{width:23px;height:23px;stroke:#58a6ff;stroke-width:1.5;fill:none;}
 .hour-temp{font-size:14px;font-weight:600;}
 .hour-rain{font-size:9px;color:#58a6ff;height:11px;}
-/* 일별 카드 */
 .day-card{background:#161b22;border:1px solid rgba(255,255,255,0.06);border-radius:14px;padding:15px 18px;margin:0 18px 11px;display:flex;align-items:center;justify-content:space-between;}
 .day-left{display:flex;align-items:center;gap:14px;}
 .day-icon{width:34px;height:34px;stroke:#58a6ff;stroke-width:1.5;fill:none;}
@@ -51,10 +56,13 @@ body{margin:0;font-family:-apple-system,'Segoe UI',sans-serif;background:#0d1117
 .info h1{font-size:20px;margin:0 0 16px;color:#e6edf3;}
 .info .item{margin-bottom:14px;}
 .info .label{color:#58a6ff;font-weight:600;font-size:12px;}
+/* 탭바 — 활성 강조 */
 .tab-bar{position:absolute;bottom:0;left:0;right:0;height:56px;z-index:2000;background:rgba(13,17,23,0.97);backdrop-filter:blur(20px);display:flex;border-top:1px solid rgba(255,255,255,0.06);}
-.tab{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#6e7681;font-size:10px;cursor:pointer;gap:3px;font-weight:500;}
+.tab{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#6e7681;font-size:10px;cursor:pointer;gap:3px;font-weight:500;position:relative;transition:color 0.2s;}
 .tab.active{color:#58a6ff;}
-.tab svg{width:21px;height:21px;stroke:currentColor;stroke-width:1.6;fill:none;}
+.tab.active::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:28px;height:3px;background:#1f6feb;border-radius:0 0 3px 3px;}
+.tab.active svg{transform:translateY(-1px);}
+.tab svg{width:21px;height:21px;stroke:currentColor;stroke-width:1.6;fill:none;transition:transform 0.2s;}
 .popup-card{position:absolute;top:45%;left:50%;transform:translate(-50%,-50%);z-index:1500;background:rgba(13,17,23,0.96);backdrop-filter:blur(20px);padding:18px 22px;border-radius:14px;border:1px solid rgba(255,255,255,0.1);display:none;min-width:170px;text-align:center;}
 .popup-card .loc{font-size:11px;color:#7d8590;margin-bottom:8px;}
 .popup-card .cond{font-size:20px;font-weight:700;margin-bottom:4px;}
@@ -64,8 +72,9 @@ body{margin:0;font-family:-apple-system,'Segoe UI',sans-serif;background:#0d1117
 
 <div class="page active" id="pageHome">
 <div class="home">
-<h1>한반도 날씨</h1>
-<div class="sub" id="homeSub"></div>
+<h1>날씨</h1>
+<div class="cities" id="cities"></div>
+<div class="now-box"><div class="now-temp" id="nowTemp">--°</div><div class="now-cond" id="nowCond"></div></div>
 <div class="section-label">시간별</div>
 <div class="hourly" id="hourly"></div>
 <div class="section-label">3일 예보</div>
@@ -107,7 +116,7 @@ body{margin:0;font-family:-apple-system,'Segoe UI',sans-serif;background:#0d1117
 <div class="item"><span class="label">예측 모델</span><br>ACE2-ERA5 (AI 기후 모델). ECMWF IFS 실시간 자료를 초기조건으로 변환하여 사용.</div>
 <div class="item"><span class="label">초기 시각 (Initial)</span><br><span id="infoInit"></span> UTC 기준</div>
 <div class="item"><span class="label">예측 방식</span><br>6시간 간격 자기회귀. 최대 3일(72시간) 예보.</div>
-<div class="item"><span class="label">해상도</span><br>약 1° 격자 (~100km). 국지 강수 표현 한계.</div>
+<div class="item"><span class="label">해상도</span><br>약 1° 격자 (~100km). 도시별 값은 가장 가까운 격자 기준으로 근사.</div>
 <div class="item"><span class="label">갱신</span><br>IFS 발표(하루 4회)에 맞춰 자동 갱신.</div>
 <div class="item" style="color:#6e7681;font-size:11px;margin-top:20px;">※ AI 모델 예측으로 실제 기상청 예보와 다를 수 있습니다. 5일 이내 신뢰도가 높습니다.</div></div>
 </div>
@@ -128,40 +137,50 @@ var initStr=META.init;
 document.getElementById('initP').textContent='기준 '+initStr+' UTC';
 document.getElementById('initT').textContent='기준 '+initStr+' UTC';
 document.getElementById('infoInit').textContent=initStr;
-document.getElementById('homeSub').textContent='ACE2 · 기준 '+initStr+' UTC';
 
-function avgGrid(g){var s=0,c=0;for(var i=0;i<g.length;i++)for(var j=0;j<g[i].length;j++){s+=g[i][j];c++;}return s/c;}
+// 도시 (이름, 위도, 경도)
+var CITIES=[['서울',37.5,127.0],['부산',35.1,129.0],['대구',35.9,128.6],['광주',35.2,126.9],['대전',36.4,127.4],['강릉',37.8,128.9],['제주',33.5,126.5]];
+var curCity=0;
+
+function nr(a,v){var bi=0,b2=1e9;for(var i=0;i<a.length;i++){var dd=Math.abs(a[i]-v);if(dd<b2){b2=dd;bi=i;}}return bi;}
+function cellVal(grid,la,lo){return grid[nr(META.grid_lats,la)][nr(META.grid_lons,lo)];}
 function iconBig(pr){if(pr>=5)return '<path d="M7 18a4 4 0 01-.5-7.97A5.5 5.5 0 0117.9 11.5 3.5 3.5 0 0117 18H7z"/><path d="M9 20l-1 2M13 20l-1 2M16 20l-1 2"/>';
 if(pr>=0.5)return '<path d="M7 18a4 4 0 01-.5-7.97A5.5 5.5 0 0117.9 11.5 3.5 3.5 0 0117 18H7z"/><path d="M10 20l-1 2M15 20l-1 2"/>';
 if(pr>=0.1)return '<path d="M7 18a4 4 0 01-.5-7.97A5.5 5.5 0 0117.9 11.5 3.5 3.5 0 0117 18H7z"/>';
 return '<circle cx="12" cy="12" r="5"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M18.4 5.6L17 7M7 17l-1.4 1.4"/>';}
 function condName(pr){return pr>=5?'비':pr>=0.5?'약한 비':pr>=0.1?'구름 많음':'맑음';}
 
-// 시간별 스크롤
-var hh='';
-META.times.forEach(function(t){
-  var pr=avgGrid(t.precip), tp=avgGrid(t.temp);
-  var hm=t.valid.slice(11,16);
-  hh+='<div class="hour-item"><div class="hour-time">'+hm+'</div>'+
-    '<svg class="hour-icon" viewBox="0 0 24 24">'+iconBig(pr)+'</svg>'+
-    '<div class="hour-temp">'+tp.toFixed(0)+'°</div>'+
-    '<div class="hour-rain">'+(pr>=0.1?pr.toFixed(1):'')+'</div></div>';
-});
-document.getElementById('hourly').innerHTML=hh;
+// 도시 버튼
+var ch='';CITIES.forEach(function(c,i){ch+='<div class="city'+(i===0?' on':'')+'" data-i="'+i+'">'+c[0]+'</div>';});
+document.getElementById('cities').innerHTML=ch;
 
-// 일별 카드
-var days={};
-META.times.forEach(function(t){var dt=t.valid.slice(0,10);if(!days[dt])days[dt]={prs:[],mxs:[],mns:[]};
-days[dt].prs.push(avgGrid(t.precip));var tg=t.temp,mx=-99,mn=99;
-for(var i=0;i<tg.length;i++)for(var j=0;j<tg[i].length;j++){if(tg[i][j]>mx)mx=tg[i][j];if(tg[i][j]<mn)mn=tg[i][j];}
-days[dt].mxs.push(mx);days[dt].mns.push(mn);});
-var dk=Object.keys(days).sort(),dn=['오늘','내일','모레','3일후','4일후'],dh='';
-dk.forEach(function(d,idx){var o=days[d];var mp=Math.max.apply(null,o.prs);
-var hi=Math.max.apply(null,o.mxs),lo=Math.min.apply(null,o.mns),md=d.slice(5).replace('-','/');
-dh+='<div class="day-card"><div class="day-left"><svg class="day-icon" viewBox="0 0 24 24">'+iconBig(mp)+'</svg>'+
-'<div><div class="day-name">'+(dn[idx]||md)+'</div><div class="day-date">'+md+'</div><div class="day-cond">'+condName(mp)+'</div></div></div>'+
-'<div class="day-right"><div class="day-temp">'+hi.toFixed(0)+'°<span class="lo"> / '+lo.toFixed(0)+'°</span></div><div class="day-rain">강수 '+mp.toFixed(1)+' mm/h</div></div></div>';});
-document.getElementById('dayCards').innerHTML=dh;
+function renderCity(ci){
+  curCity=ci;var c=CITIES[ci],la=c[1],lo=c[2];
+  // 현재(첫 시점)
+  var t0=META.times[0];var pr0=cellVal(t0.precip,la,lo),tp0=cellVal(t0.temp,la,lo);
+  document.getElementById('nowTemp').textContent=tp0.toFixed(0)+'°';
+  document.getElementById('nowCond').textContent=c[0]+' · '+condName(pr0)+' · 강수 '+pr0.toFixed(1)+'mm/h';
+  // 시간별
+  var hh='';META.times.forEach(function(t){var pr=cellVal(t.precip,la,lo),tp=cellVal(t.temp,la,lo);
+  hh+='<div class="hour-item"><div class="hour-time">'+t.valid.slice(11,16)+'</div>'+
+  '<svg class="hour-icon" viewBox="0 0 24 24">'+iconBig(pr)+'</svg>'+
+  '<div class="hour-temp">'+tp.toFixed(0)+'°</div><div class="hour-rain">'+(pr>=0.1?pr.toFixed(1):'')+'</div></div>';});
+  document.getElementById('hourly').innerHTML=hh;
+  // 일별
+  var days={};META.times.forEach(function(t){var dt=t.valid.slice(0,10);if(!days[dt])days[dt]={prs:[],tps:[]};
+  days[dt].prs.push(cellVal(t.precip,la,lo));days[dt].tps.push(cellVal(t.temp,la,lo));});
+  var dk=Object.keys(days).sort(),dn=['오늘','내일','모레','3일후'],dh='';
+  dk.forEach(function(d,idx){var o=days[d];var mp=Math.max.apply(null,o.prs);
+  var hi=Math.max.apply(null,o.tps),lo2=Math.min.apply(null,o.tps),md=d.slice(5).replace('-','/');
+  dh+='<div class="day-card"><div class="day-left"><svg class="day-icon" viewBox="0 0 24 24">'+iconBig(mp)+'</svg>'+
+  '<div><div class="day-name">'+(dn[idx]||md)+'</div><div class="day-date">'+md+'</div><div class="day-cond">'+condName(mp)+'</div></div></div>'+
+  '<div class="day-right"><div class="day-temp">'+hi.toFixed(0)+'°<span class="lo"> / '+lo2.toFixed(0)+'°</span></div><div class="day-rain">강수 '+mp.toFixed(1)+' mm/h</div></div></div>';});
+  document.getElementById('dayCards').innerHTML=dh;
+}
+document.querySelectorAll('.city').forEach(function(b){b.addEventListener('click',function(){
+document.querySelectorAll('.city').forEach(function(x){x.classList.remove('on');});this.classList.add('on');
+renderCity(parseInt(this.dataset.i));});});
+renderCity(0);
 
 var bd=[[META.lat_min,META.lon_min],[META.lat_max,META.lon_max]];
 var map=L.map('map',{zoomControl:false,maxBounds:bd,maxBoundsViscosity:1.0,minZoom:4}).setView([35,130],5);
@@ -195,11 +214,9 @@ document.querySelectorAll('.page').forEach(function(p){p.classList.remove('activ
 document.getElementById('page'+this.dataset.page).classList.add('active');
 setTimeout(function(){map.invalidateSize();mapT.invalidateSize();},120);});});
 
-function nr(a,v){var bi=0,b2=1e9;for(var i=0;i<a.length;i++){var dd=Math.abs(a[i]-v);if(dd<b2){b2=dd;bi=i;}}return bi;}
 map.on('click',function(e){var la=e.latlng.lat,lo=e.latlng.lng;
 if(la<META.grid_lats[0]||la>META.grid_lats[META.grid_lats.length-1]||lo<META.grid_lons[0]||lo>META.grid_lons[META.grid_lons.length-1])return;
-var ii=nr(META.grid_lats,la),jj=nr(META.grid_lons,lo),t=META.times[pc];
-var pr=t.precip[ii][jj],tp=t.temp[ii][jj];
+var t=META.times[pc];var pr=cellVal(t.precip,la,lo),tp=cellVal(t.temp,la,lo);
 var c=pr>=5?'강한 비':pr>=1?'비':pr>=0.1?'구름 많음':'맑음';
 document.getElementById('popupLoc').textContent=la.toFixed(1)+'°N '+lo.toFixed(1)+'°E · '+t.valid.replace('T',' ');
 document.getElementById('popupCond').textContent=c;
