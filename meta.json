@@ -1,8 +1,8 @@
 {
-  "lat_min": 30,
-  "lat_max": 45,
-  "lon_min": 120,
-  "lon_max": 145,
+  "lat_min": 32,
+  "lat_max": 40,
+  "lon_min": 124,
+  "lon_max": 132,
   "init": "2026-06-28T12:00",
   "times": [
     {
