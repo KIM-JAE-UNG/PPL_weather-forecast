@@ -1,93 +1,93 @@
 {
-  "lat_min": 32,
-  "lat_max": 40,
-  "lon_min": 124,
-  "lon_max": 132,
-  "init": "2026-06-28T12:00",
+  "lat_min": 30,
+  "lat_max": 45,
+  "lon_min": 120,
+  "lon_max": 145,
+  "init": "2026-06-28T18:00",
   "times": [
     {
       "step": 0,
       "file": "precip_00.png",
-      "valid": "2026-06-28T18:00",
+      "valid": "2026-06-29T00:00",
       "fhour": 6,
-      "label_full": "2026-06-28 18:00 (+6h)"
+      "label_full": "2026-06-29 00:00 (+6h)"
     },
     {
       "step": 1,
       "file": "precip_01.png",
-      "valid": "2026-06-29T00:00",
+      "valid": "2026-06-29T06:00",
       "fhour": 12,
-      "label_full": "2026-06-29 00:00 (+12h)"
+      "label_full": "2026-06-29 06:00 (+12h)"
     },
     {
       "step": 2,
       "file": "precip_02.png",
-      "valid": "2026-06-29T06:00",
+      "valid": "2026-06-29T12:00",
       "fhour": 18,
-      "label_full": "2026-06-29 06:00 (+18h)"
+      "label_full": "2026-06-29 12:00 (+18h)"
     },
     {
       "step": 3,
       "file": "precip_03.png",
-      "valid": "2026-06-29T12:00",
+      "valid": "2026-06-29T18:00",
       "fhour": 24,
-      "label_full": "2026-06-29 12:00 (+24h)"
+      "label_full": "2026-06-29 18:00 (+24h)"
     },
     {
       "step": 4,
       "file": "precip_04.png",
-      "valid": "2026-06-29T18:00",
+      "valid": "2026-06-30T00:00",
       "fhour": 30,
-      "label_full": "2026-06-29 18:00 (+30h)"
+      "label_full": "2026-06-30 00:00 (+30h)"
     },
     {
       "step": 5,
       "file": "precip_05.png",
-      "valid": "2026-06-30T00:00",
+      "valid": "2026-06-30T06:00",
       "fhour": 36,
-      "label_full": "2026-06-30 00:00 (+36h)"
+      "label_full": "2026-06-30 06:00 (+36h)"
     },
     {
       "step": 6,
       "file": "precip_06.png",
-      "valid": "2026-06-30T06:00",
+      "valid": "2026-06-30T12:00",
       "fhour": 42,
-      "label_full": "2026-06-30 06:00 (+42h)"
+      "label_full": "2026-06-30 12:00 (+42h)"
     },
     {
       "step": 7,
       "file": "precip_07.png",
-      "valid": "2026-06-30T12:00",
+      "valid": "2026-06-30T18:00",
       "fhour": 48,
-      "label_full": "2026-06-30 12:00 (+48h)"
+      "label_full": "2026-06-30 18:00 (+48h)"
     },
     {
       "step": 8,
       "file": "precip_08.png",
-      "valid": "2026-06-30T18:00",
+      "valid": "2026-07-01T00:00",
       "fhour": 54,
-      "label_full": "2026-06-30 18:00 (+54h)"
+      "label_full": "2026-07-01 00:00 (+54h)"
     },
     {
       "step": 9,
       "file": "precip_09.png",
-      "valid": "2026-07-01T00:00",
+      "valid": "2026-07-01T06:00",
       "fhour": 60,
-      "label_full": "2026-07-01 00:00 (+60h)"
+      "label_full": "2026-07-01 06:00 (+60h)"
     },
     {
       "step": 10,
       "file": "precip_10.png",
-      "valid": "2026-07-01T06:00",
+      "valid": "2026-07-01T12:00",
       "fhour": 66,
-      "label_full": "2026-07-01 06:00 (+66h)"
+      "label_full": "2026-07-01 12:00 (+66h)"
     },
     {
       "step": 11,
       "file": "precip_11.png",
-      "valid": "2026-07-01T12:00",
+      "valid": "2026-07-01T18:00",
       "fhour": 72,
-      "label_full": "2026-07-01 12:00 (+72h)"
+      "label_full": "2026-07-01 18:00 (+72h)"
     }
   ]
 }
