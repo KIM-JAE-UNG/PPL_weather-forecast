@@ -34,12 +34,14 @@ body{margin:0;font-family:-apple-system,'Segoe UI',sans-serif;background:#0d1117
 .city.on{background:#1f6feb;color:#fff;border-color:#1f6feb;}
 .now-box{padding:0 18px 18px;}
 .now-city{font-size:15px;font-weight:600;color:#e6edf3;margin-bottom:2px;}
+.now-when{font-size:11px;color:#7d8590;margin-bottom:6px;}
 .now-temp{font-size:46px;font-weight:200;line-height:1;}
 .now-cond{font-size:14px;color:#9ea7b3;margin-top:4px;}
 .section-label{font-size:11px;color:#7d8590;font-weight:600;padding:0 18px;margin-bottom:8px;text-transform:uppercase;letter-spacing:0.5px;}
 .hourly{display:flex;overflow-x:auto;gap:0;padding:0 12px 4px;margin-bottom:22px;-webkit-overflow-scrolling:touch;}
 .hourly::-webkit-scrollbar{display:none;}
-.hour-item{flex:0 0 auto;width:60px;display:flex;flex-direction:column;align-items:center;gap:5px;padding:10px 0;}
+.hour-item{flex:0 0 auto;width:60px;display:flex;flex-direction:column;align-items:center;gap:5px;padding:10px 0;border-radius:10px;}
+.hour-item.now{background:rgba(31,111,235,0.15);}
 .hour-day{font-size:10px;color:#58a6ff;font-weight:600;height:13px;}
 .hour-time{font-size:11px;color:#9ea7b3;font-weight:500;}
 .hour-icon{width:23px;height:23px;stroke:#58a6ff;stroke-width:1.5;fill:none;}
@@ -76,7 +78,7 @@ body{margin:0;font-family:-apple-system,'Segoe UI',sans-serif;background:#0d1117
 <h1>날씨</h1>
 <div class="basis" id="basisLine"></div>
 <div class="cities" id="cities"></div>
-<div class="now-box"><div class="now-city" id="nowCity"></div><div class="now-temp" id="nowTemp">--°</div><div class="now-cond" id="nowCond"></div></div>
+<div class="now-box"><div class="now-city" id="nowCity"></div><div class="now-when" id="nowWhen"></div><div class="now-temp" id="nowTemp">--°</div><div class="now-cond" id="nowCond"></div></div>
 <div class="section-label">시간별 (KST)</div>
 <div class="hourly" id="hourly"></div>
 <div class="section-label">3일 예보</div>
@@ -151,6 +153,10 @@ document.getElementById('initT').textContent='기준 '+initK.full+' KST';
 document.getElementById('infoInit').innerHTML=META.init+' UTC ('+initK.full+' KST)';
 var todayKST=toKST(META.times[0].valid).date;
 
+// 지금 시각에 제일 가까운 예측 시점
+var nowIdx=0,_nowMs=Date.now(),_bd=1e15;
+META.times.forEach(function(t,si){var vm=new Date(t.valid+':00Z').getTime();var dd=Math.abs(vm-_nowMs);if(dd<_bd){_bd=dd;nowIdx=si;}});
+
 var CITIES=META.cities;
 function nr(a,v){var bi=0,b2=1e9;for(var i=0;i<a.length;i++){var dd=Math.abs(a[i]-v);if(dd<b2){b2=dd;bi=i;}}return bi;}
 function cellVal(g,la,lo){return g[nr(META.grid_lats,la)][nr(META.grid_lons,lo)];}
@@ -165,13 +171,15 @@ document.getElementById('cities').innerHTML=ch;
 
 function renderCity(ci){
   var c=CITIES[ci];
-  var t0p=c.precip[0],t0t=c.temp[0];
+  var nowP=c.precip[nowIdx],nowT=c.temp[nowIdx];
+  var nk=toKST(META.times[nowIdx].valid);
   document.getElementById('nowCity').textContent=c.name;
-  document.getElementById('nowTemp').textContent=t0t.toFixed(0)+'°';
-  document.getElementById('nowCond').textContent=condName(t0p)+(t0p>=0.5?' · 강수 '+t0p.toFixed(1)+'mm/h':'');
+  document.getElementById('nowWhen').textContent=nk.full+' KST 기준';
+  document.getElementById('nowTemp').textContent=nowT.toFixed(0)+'°';
+  document.getElementById('nowCond').textContent=condName(nowP)+(nowP>=0.5?' · 강수 '+nowP.toFixed(1)+'mm/h':'');
   var hh='';META.times.forEach(function(t,si){var pr=c.precip[si],tp=c.temp[si];
   var k=toKST(t.valid);var dl=k.date===todayKST?'오늘':'';
-  hh+='<div class="hour-item"><div class="hour-day">'+dl+'</div><div class="hour-time">'+k.time+'</div>'+
+  hh+='<div class="hour-item'+(si===nowIdx?' now':'')+'"><div class="hour-day">'+dl+'</div><div class="hour-time">'+k.time+'</div>'+
   '<svg class="hour-icon" viewBox="0 0 24 24">'+iconBig(pr)+'</svg>'+
   '<div class="hour-temp">'+tp.toFixed(0)+'°</div><div class="hour-rain">'+(pr>=0.5?pr.toFixed(1):'')+'</div></div>';});
   document.getElementById('hourly').innerHTML=hh;
@@ -204,7 +212,7 @@ document.getElementById('slider').max=META.times.length-1;
 document.getElementById('slider').addEventListener('input',function(e){showP(parseInt(e.target.value));});
 var psv='<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>',pse='<svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>';
 document.getElementById('playP').addEventListener('click',function(){pp=!pp;this.innerHTML=pp?pse:psv;
-if(pp){pt=setInterval(function(){showP((pc+1)%META.times.length);},800);}else clearInterval(pt);});showP(0);
+if(pp){pt=setInterval(function(){showP((pc+1)%META.times.length);},800);}else clearInterval(pt);});showP(nowIdx);
 
 var mapT=L.map('mapT',{zoomControl:false,maxBounds:bd,maxBoundsViscosity:1.0,minZoom:4}).setView([35,130],5);
 L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{maxZoom:10}).addTo(mapT);
@@ -216,7 +224,7 @@ document.getElementById('fhT').textContent='+'+META.times[i].fhour+'h';document.
 document.getElementById('tslider').max=META.times.length-1;
 document.getElementById('tslider').addEventListener('input',function(e){showT(parseInt(e.target.value));});
 document.getElementById('playT').addEventListener('click',function(){tp2=!tp2;this.innerHTML=tp2?pse:psv;
-if(tp2){tt2=setInterval(function(){showT((tc+1)%META.times.length);},800);}else clearInterval(tt2);});showT(0);
+if(tp2){tt2=setInterval(function(){showT((tc+1)%META.times.length);},800);}else clearInterval(tt2);});showT(nowIdx);
 
 document.querySelectorAll('.tab').forEach(function(tab){tab.addEventListener('click',function(){
 document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('active');});this.classList.add('active');
